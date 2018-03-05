@@ -7,8 +7,8 @@ class Network(nn.Module):
     def __init__(self, n_features, n_actions):
         super(Network, self).__init__()
 
-        self.l1 = nn.Linear(n_features, 30)
-        self.l2 = nn.Linear(30, 64)
+        self.l1 = nn.Linear(n_features, 64)
+        self.l2 = nn.Linear(64, 64)
 
         self.policy_head = nn.Linear(64, n_actions)
         self.value_head = nn.Linear(64, 1)
@@ -24,3 +24,23 @@ class Network(nn.Module):
         x = F.relu(self.l1(x))
         x = F.relu(self.l2(x))
         return self.value_head(x)
+
+
+class SeparateNetwork(nn.Module):
+    def __init__(self, n_features, n_actions):
+        super(SeparateNetwork, self).__init__()
+        self.p1 = nn.Linear(n_features, 64)
+        self.p2 = nn.Linear(64, n_actions)
+        self.v1 = nn.Linear(n_features, 64)
+        self.v2 = nn.Linear(64, 1)
+    
+    def forward(self, x):
+        p = F.relu(self.p1(x))
+        p = F.softmax(self.p2(p), dim=-1)
+        v = F.relu(self.v1(x))
+        v = self.v2(v)
+        return p, v
+
+    def get_value(self, x):
+        v = F.relu(self.v1(x))
+        return self.v2(v)
