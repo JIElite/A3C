@@ -20,7 +20,7 @@ def wrap_as_variable(np_array, dtype=np.float32):
 def init_weights(network):
     for module in network.modules():
         if isinstance(module, nn.Linear):
-            module.weight.data.normal_(0.0, 0.01)
+            module.weight.data.normal_(0.0, 0.1)
             module.bias.data.fill_(0)
 
         if isinstance(module, nn.Conv2d):
@@ -30,6 +30,8 @@ def init_weights(network):
 
 def ensure_shared_grad(global_net, local_net):
     for l_parameter, g_parameter in zip(local_net.parameters(), global_net.parameters()):
+        if g_parameter.grad is not None:
+            return
         g_parameter._grad = l_parameter.grad
 
 
@@ -71,6 +73,9 @@ class Buffer:
 
     def get_reversed_experience(self):
         return reversed(self.memory)
+
+    def get_n_steps_data(self):
+        return Transition(*zip(*self.memory))
 
 
 class SharedAdam(torch.optim.Adam):
