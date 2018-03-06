@@ -34,13 +34,13 @@ optimizer = SharedAdam(global_net.parameters(), lr=LR)
 optimizer.share_memory()
 
 # Shared Data
-eps_counter = mp.Value('i', 0)
-result_queue = mp.Queue()
+# eps_counter = mp.Value('i', 0)
+# result_queue = mp.Queue()
 
 # evaluator = mp.Process(target=evaluate, args=(eps_counter, result_queue))
 # evaluator.start()
 
-workers = [Worker(env, global_net, SeparateNetwork(N_FEATURES, N_ACTIONS), optimizer, eps_counter, result_queue, 
+workers = [Worker(env, global_net, SeparateNetwork(N_FEATURES, N_ACTIONS), optimizer,
 N_FEATURES, N_ACTIONS, i, n_steps=N_STEPS, max_steps=30000) for i in range(8)]
 for worker in workers:
     worker.start()

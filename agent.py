@@ -4,13 +4,14 @@ import numpy
 import torch
 from torch.autograd import Variable
 from torch.distributions import Categorical
-import torch.multiprocessing as mp
+# import torch.multiprocessing as mp
+from multiprocessing import Process
 
 from utils import init_weights, wrap_as_variable, ensure_shared_grad, Buffer
 
 
-class Worker(mp.Process):
-    def __init__(self, env, gnet, lnet, optimizer, eps_counter, result_queue, n_features, n_actions, wid, gamma=0.99, n_steps=8, max_steps=10000):
+class Worker(Process):
+    def __init__(self, env, gnet, lnet, optimizer, n_features, n_actions, wid, gamma=0.99, n_steps=8, max_steps=10000):
         super(Worker, self).__init__()
         # Configuration
         self.worker_id = wid
@@ -19,14 +20,15 @@ class Worker(mp.Process):
         self.max_steps = max_steps
         self.env = env
         # Usage data structure
-        self.result_queue = result_queue
-        self.eps_counter = eps_counter
+        # self.result_queue = result_queue
+        # self.eps_counter = eps_counter
         self.buffer = Buffer(size=n_steps)
         
         # network related settings
         self.global_net = gnet
         self.local_net = lnet
         self.optimizer = optimizer
+        self.eps_counter = 0
         init_weights(self.local_net)
 
     def select_action(self, obs):
@@ -84,9 +86,10 @@ class Worker(mp.Process):
             # transition
             obs = obs_
             if done:
-                print('work no: {} eps: {}, reward: {}'.format(self.worker_id, self.eps_counter.value, eps_reward))
-                self.result_queue.put(eps_reward)
-                self.eps_counter.value += 1
+                self.eps_counter += 1
+                print('work no: {} eps: {}, reward: {}'.format(self.worker_id, self.eps_counter, eps_reward))
+                # self.result_queue.put(eps_reward)
+                # self.eps_counter.value += 1
                 eps_reward = 0
                 self.buffer.reset()
                 obs = self.env.reset()
