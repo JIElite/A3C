@@ -1,5 +1,6 @@
 from itertools import count
 from collections import deque
+import os
 
 import gym
 import torch.multiprocessing as mp
@@ -7,6 +8,9 @@ import torch.multiprocessing as mp
 from model import Network, SeparateNetwork
 from utils import SharedAdam, init_weights
 from agent import Worker
+
+
+os.environ["OMP_NUM_THREADS"] = "1"
 
 
 def evaluate(eps_counter, result_queue):
@@ -21,8 +25,8 @@ def evaluate(eps_counter, result_queue):
 
 env = gym.make('CartPole-v0')
 N_FEATURES = env.observation_space.shape[0]
-N_ACTIONS = env.action_space.n
 LR = 5e-4
+N_ACTIONS = env.action_space.n
 N_STEPS = 8
 
 
