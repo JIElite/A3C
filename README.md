@@ -1,6 +1,6 @@
 # Asynchronous Advantage Actor-Critic Algorithm (A3C)
 - Still in progress.
-- TODO: GPU support
+
 - TODO: Support more network architecture
 
 ## Install dependency
@@ -18,7 +18,6 @@ Third, go to pytorch.org to install pytorch
 ## execution
 `python main.py`
 
-## Issue
-This implementation is slow on Ubuntu, and currently don't know the reason. Pull request is welcome. 
-The details of this issue: https://discuss.pytorch.org/t/the-huge-gap-of-training-time-between-macos-and-ubuntu-16-04lts/14405
+## NOTICE
+1. training speed issue, please add `os.environ['OMP_NUM_THREADS'] = '1'` to your source code, if your platform is Linux. Without adding this code, it will take much time for training because of process blocking issue. You cau see related discussion here: https://github.com/ikostrikov/pytorch-a3c/issues/33
 
