@@ -11,9 +11,6 @@ def wrap_as_variable(np_array, dtype=np.float32):
     # type conversion
     if np_array.dtype != dtype:
         np_array = np_array.astype(dtype)
-
-    # wrap data as torch Variable
-    # TODO support CUDA 
     return Variable(torch.from_numpy(np_array)) 
 
 
@@ -63,6 +60,7 @@ class Buffer:
         return Transition(*zip(*self.memory))
 
 
+# This class was copied from ikostrikov/pytorch-a3c 
 class SharedAdam(torch.optim.Adam):
     """Implements Adam algorithm with shared states.
     """
