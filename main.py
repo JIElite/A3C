@@ -6,7 +6,7 @@ import gym
 import torch.multiprocessing as mp
 
 from model import Network, SeparateNetwork
-from utils import SharedAdam, init_weights,
+from utils import SharedAdam, init_weights
 from agent import ActorCritic 
 from run_loop import run_loop
 
@@ -44,5 +44,6 @@ for i in range(NUM_WORKERS):
     worker = mp.Process(target=run_loop, args=(agent, "CartPole-v0", eps_counter, MAX_STEPS))
     worker.start()
     worker_list.append(worker)
-for worker in workers:
+
+for worker in worker_list:
     worker.join()
