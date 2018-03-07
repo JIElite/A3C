@@ -10,15 +10,13 @@ from utils import init_weights, wrap_as_variable, ensure_shared_grad, Buffer
 
 
 class ActorCritic:
-    def __init__(self, wid, shared_model, model, optimizer, eps_counter, result_queue, gamma=0.99, n_steps=8):
+    def __init__(self, wid, shared_model, model, optimizer, gamma=0.99, n_steps=8):
         # Configuration
         self.worker_id = wid
         self.gamma = gamma
         self.n_steps = n_steps
 
-        # Usage data structure
-        self.result_queue = result_queue
-        self.eps_counter = eps_counter
+        # experience buffer
         self.buffer = Buffer(size=n_steps)
         
         # network related settings

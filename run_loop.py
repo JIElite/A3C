@@ -1,7 +1,7 @@
 import gym
 
 
-def run_loop(agent, env_id, max_steps=30000):
+def run_loop(agent, env_id, eps_counter, max_steps):
     env = gym.make(env_id) 
     obs = env.reset()
     eps_reward = 0
@@ -19,9 +19,8 @@ def run_loop(agent, env_id, max_steps=30000):
         # transition
         obs = obs_
         if done:
-            print('work no: {} eps: {}, reward: {}'.format(agent.worker_id, agent.eps_counter.value, eps_reward))
-            agent.result_queue.put(eps_reward)
-            agent.eps_counter.value += 1
+            print('work no: {} eps: {}, reward: {}'.format(agent.worker_id, eps_counter.value, eps_reward))
+            eps_counter.value += 1
             eps_reward = 0
             agent.buffer.reset()
             obs = env.reset()
