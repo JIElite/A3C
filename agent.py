@@ -9,9 +9,9 @@ import torch.multiprocessing as mp
 from utils import init_weights, wrap_as_variable, ensure_shared_grad, Buffer
 
 
-class Worker(mp.Process):
+class ActorCritic(mp.Process):
     def __init__(self, env, gnet, lnet, optimizer, eps_counter, result_queue, n_features, n_actions, wid, gamma=0.99, n_steps=8, max_steps=10000):
-        super(Worker, self).__init__()
+        super(ActorCritic, self).__init__()
         # Configuration
         self.worker_id = wid
         self.gamma = gamma

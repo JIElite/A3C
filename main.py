@@ -7,7 +7,7 @@ import torch.multiprocessing as mp
 
 from model import Network, SeparateNetwork
 from utils import SharedAdam, init_weights, xavier_init
-from agent import Worker
+from agent import ActorCritic 
 
 
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -44,7 +44,7 @@ result_queue = mp.Queue()
 # evaluator = mp.Process(target=evaluate, args=(eps_counter, result_queue))
 # evaluator.start()
 
-workers = [Worker(env, global_net, SeparateNetwork(N_FEATURES, N_ACTIONS), optimizer, eps_counter, result_queue, 
+workers = [ActorCritic(env, global_net, SeparateNetwork(N_FEATURES, N_ACTIONS), optimizer, eps_counter, result_queue,
 N_FEATURES, N_ACTIONS, i, n_steps=N_STEPS, max_steps=30000) for i in range(8)]
 for worker in workers:
     worker.start()
