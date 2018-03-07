@@ -22,10 +22,16 @@ def init_weights(network):
         if isinstance(module, nn.Linear):
             module.weight.data.normal_(0.0, 0.1)
             module.bias.data.fill_(0)
+        elif isinstance(module, nn.Conv2d):
+            module.weight.data.normal_(0.0, 0.02)
 
-        if isinstance(module, nn.Conv2d):
-            # TODO need to implement
-            pass
+
+def xavier_init(network):
+    for module in network.modules():
+        if isinstance(module, nn.Linear):
+            nn.init.xavier_normal(module.weight.data)
+        elif isinstance(module, nn.Conv2d):
+            nn.init.xavier_normal(module.weight.data)
 
 
 def ensure_shared_grad(global_net, local_net):

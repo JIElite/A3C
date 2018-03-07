@@ -6,7 +6,7 @@ import gym
 import torch.multiprocessing as mp
 
 from model import Network, SeparateNetwork
-from utils import SharedAdam, init_weights
+from utils import SharedAdam, init_weights, xavier_init
 from agent import Worker
 
 
@@ -32,7 +32,7 @@ N_STEPS = 8
 
 global_net = SeparateNetwork(N_FEATURES, N_ACTIONS)
 global_net.share_memory()
-init_weights(global_net)
+xavier_init(global_net)
 
 optimizer = SharedAdam(global_net.parameters(), lr=LR)
 optimizer.share_memory()
