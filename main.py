@@ -8,6 +8,7 @@ import torch.multiprocessing as mp
 from model import Network, SeparateNetwork
 from utils import SharedAdam, init_weights, xavier_init
 from agent import ActorCritic 
+from run_loop import run_loop
 
 
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -28,6 +29,8 @@ N_FEATURES = env.observation_space.shape[0]
 LR = 5e-4
 N_ACTIONS = env.action_space.n
 N_STEPS = 8
+NUM_WORKERS = 8
+MAX_STEPS = 30000
 
 
 global_net = SeparateNetwork(N_FEATURES, N_ACTIONS)
@@ -41,14 +44,20 @@ optimizer.share_memory()
 eps_counter = mp.Value('i', 0)
 result_queue = mp.Queue()
 
-# evaluator = mp.Process(target=evaluate, args=(eps_counter, result_queue))
-# evaluator.start()
-
-workers = [ActorCritic(env, global_net, SeparateNetwork(N_FEATURES, N_ACTIONS), optimizer, eps_counter, result_queue,
-N_FEATURES, N_ACTIONS, i, n_steps=N_STEPS, max_steps=30000) for i in range(8)]
-for worker in workers:
+# Hogwild! style update
+worker_list = []
+for i in range(NUM_WORKERS):
+    agent = ActorCritic(
+        wid=i,
+        shared_model=global_net,
+        model=SeparateNetwork(N_FEATURES, N_ACTIONS),
+        optimizer=optimizer,
+        eps_counter=eps_counter,
+        result_queue=result_queue,
+        n_steps=N_STEPS,
+    )
+    worker = mp.Process(target=run_loop, args=(agent, "CartPole-v0", MAX_STEPS))
     worker.start()
+    worker_list.append(worker)
 for worker in workers:
     worker.join()
-
-# evaluator.join()
