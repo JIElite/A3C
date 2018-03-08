@@ -1,6 +1,7 @@
 from itertools import count
 from collections import deque
 import os
+os.environ["OMP_NUM_THREADS"] = "1"
 
 import gym
 import torch.multiprocessing as mp
@@ -18,7 +19,6 @@ N_ACTIONS = env.action_space.n
 N_STEPS = 8
 NUM_WORKERS = 8
 MAX_STEPS = 30000
-os.environ["OMP_NUM_THREADS"] = "1"
 
 
 global_net = SeparateNetwork(N_FEATURES, N_ACTIONS)
